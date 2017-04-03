@@ -49,12 +49,9 @@ void check_files(ifstream& in_file, string& in_name,
   }
 }
 
-//int main(int argc, char* argv[]) {
-int main(){
-	char* argv[3];
-	argv[1] = "C:\\Users\\Masoud\\Desktop\\Files\\Projects\\Udacity_SDC\\CarND-Extended-Kalman-Filter-Project\\data\\sample-laser-radar-measurement-data-2.txt";
-	argv[2] = "C:\\Users\\Masoud\\Desktop\\Files\\Projects\\Udacity_SDC\\CarND-Extended-Kalman-Filter-Project\\data\\output.txt";
-  //check_arguments(argc, argv);
+int main(int argc, char* argv[]) {
+
+  check_arguments(argc, argv);
 
   string in_file_name_ = argv[1];
   ifstream in_file_(in_file_name_.c_str(), ifstream::in);
@@ -182,7 +179,6 @@ int main(){
 
   if (in_file_.is_open()) {
     in_file_.close();
-  }
-  getchar();
+  }  
   return 0;
 }
