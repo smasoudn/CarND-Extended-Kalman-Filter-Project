@@ -25,7 +25,7 @@ public:
   // measurement covariance matrix
   Eigen::MatrixXd Rr_;
   Eigen::MatrixXd Rl_;
-  Tools t = Tools();
+  Tools tools = Tools();
 
   /**
    * Constructor
