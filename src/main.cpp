@@ -49,9 +49,12 @@ void check_files(ifstream& in_file, string& in_name,
   }
 }
 
-int main(int argc, char* argv[]) {
-
-  check_arguments(argc, argv);
+//int main(int argc, char* argv[]) {
+int main(){
+	char* argv[3];
+	argv[1] = "C:\\Users\\Masoud\\Desktop\\Projects\\Udacity\\CarND-Extended-Kalman-Filter-Project\\data\\sample-laser-radar-measurement-data-1.txt";
+	argv[2] = "C:\\Users\\Masoud\\Desktop\\Projects\\Udacity\\CarND-Extended-Kalman-Filter-Project\\data\\output.txt";
+  //check_arguments(argc, argv);
 
   string in_file_name_ = argv[1];
   ifstream in_file_(in_file_name_.c_str(), ifstream::in);
@@ -136,6 +139,8 @@ int main(int argc, char* argv[]) {
   for (size_t k = 0; k < N; ++k) {
     // start filtering from the second frame (the speed is unknown in the first
     // frame)
+	  if (measurement_pack_list[k].sensor_type_ == MeasurementPackage::LASER)
+		  continue;
     fusionEKF.ProcessMeasurement(measurement_pack_list[k]);
 
     // output the estimation
@@ -179,6 +184,6 @@ int main(int argc, char* argv[]) {
   if (in_file_.is_open()) {
     in_file_.close();
   }
-
+  getchar();
   return 0;
 }

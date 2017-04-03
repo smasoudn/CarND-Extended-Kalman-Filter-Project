@@ -31,22 +31,6 @@ FusionEKF::FusionEKF() {
         0, 0.0009, 0,
         0, 0, 0.09;
 
-  /**
-  TODO:
-    * Finish initializing the FusionEKF.
-    * Set the process and measurement noises
-  */
-  ekf_.F_ = MatrixXd(4, 4);
-  ekf_.F_ << 1, 0, 1, 0,
-	         0, 1, 0, 1,
-	         0, 0, 1, 0,
-	         0, 0, 0, 1;
-  
-  ekf_.P_ = MatrixXd(4, 4);
-  ekf_.P_ << 1, 0, 0, 0,
-       	  0, 1, 0, 0,
-	      0, 0, 1000, 0,
-	      0, 0, 0, 1000;
   
   //set the acceleration noise components
   noise_ax_ = 9.0;
@@ -77,21 +61,55 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.x_ = VectorXd(4);
     ekf_.x_ << 1, 1, 1, 1;
 
+	
+	H_laser_ << 1, 0, 0, 0,
+		        0, 1, 0, 0;
+	ekf_.H_ = H_laser_;
+
+
+	Hj_ << 1, 1, 0, 0,
+		1, 1, 0, 0,
+		1, 1, 1, 1;
+	ekf_.Hj_ = Hj_;
+
+	
+	ekf_.Rr_ = R_radar_;
+	ekf_.Rl_ = R_laser_;
+
+
+	ekf_.F_ = MatrixXd(4, 4);
+	ekf_.F_ << 1, 0, 1, 0,
+		0, 1, 0, 1,
+		0, 0, 1, 0,
+		0, 0, 0, 1;
+
+
+	ekf_.P_ = MatrixXd(4, 4);
+	ekf_.P_ << 1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1000, 0,
+		0, 0, 0, 1000;
+
+
 	ekf_.Q_ = MatrixXd(4, 4);
+	ekf_.Q_ << 1, 0, 1, 0,
+		0, 1, 0, 1,
+		1, 0, 1, 0,
+		0, 1, 0, 1;
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
       */
 		float ro = measurement_pack.raw_measurements_(0);
-		float phi = measurement_pack.raw_measurements_(1);
+		float phi = measurement_pack.raw_measurements_(1);		
 		float ro_dot = measurement_pack.raw_measurements_(2);
 		ekf_.x_ << ro * cos(phi), ro * sin(phi), ro_dot * cos(phi), ro_dot * sin(phi);		
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       /**
       Initialize state.
-      */
+      */		
 		ekf_.x_ << measurement_pack.raw_measurements_(0), measurement_pack.raw_measurements_(1), 0, 0;		
     }
 
@@ -138,11 +156,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    */
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
-    // Radar updates
-	  
-
+    // Radar updates	 
+	  ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
-    // Laser updates
+    // Laser updates	  
 	  ekf_.Update(measurement_pack.raw_measurements_);
   }
 
